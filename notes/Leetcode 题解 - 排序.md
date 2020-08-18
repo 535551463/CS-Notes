@@ -118,33 +118,24 @@ Given [1,1,1,2,2,3] and k = 2, return [1,2].
 
 把数都放到桶之后，从后向前遍历桶，最先得到的 k 个数就是出现频率最多的的 k 个数。
 
-```java
-public List<Integer> topKFrequent(int[] nums, int k) {
-    Map<Integer, Integer> frequencyForNum = new HashMap<>();
-    for (int num : nums) {
-        frequencyForNum.put(num, frequencyForNum.getOrDefault(num, 0) + 1);
-    }
-    List<Integer>[] buckets = new ArrayList[nums.length + 1];
-    for (int key : frequencyForNum.keySet()) {
-        int frequency = frequencyForNum.get(key);
-        if (buckets[frequency] == null) {
-            buckets[frequency] = new ArrayList<>();
-        }
-        buckets[frequency].add(key);
-    }
-    List<Integer> topK = new ArrayList<>();
-    for (int i = buckets.length - 1; i >= 0 && topK.size() < k; i--) {
-        if (buckets[i] == null) {
-            continue;
-        }
-        if (buckets[i].size() <= (k - topK.size())) {
-            topK.addAll(buckets[i]);
-        } else {
-            topK.addAll(buckets[i].subList(0, k - topK.size()));
-        }
-    }
-    return topK;
-}
+```python
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        import collections
+        countfrequenct = collections.Counter(list(nums))
+        # print(countfrequenct)
+        bucket = [[] for _ in range(len(nums)+1)]
+        # print(bucket)
+        for i in countfrequenct:
+            # for j in range(countfrequenct[i]):
+            bucket[countfrequenct[i]].append(i)
+        # print(bucket)
+        res = []
+        for i in bucket[::-1]:
+            if len(i) > 0:
+                res += i
+        # print(res)
+        return res[:k]
 ```
 
 ## 2. 按照字符出现次数对字符串排序
@@ -165,33 +156,27 @@ Explanation:
 So 'e' must appear before both 'r' and 't'. Therefore "eetr" is also a valid answer.
 ```
 
-```java
-public String frequencySort(String s) {
-    Map<Character, Integer> frequencyForNum = new HashMap<>();
-    for (char c : s.toCharArray())
-        frequencyForNum.put(c, frequencyForNum.getOrDefault(c, 0) + 1);
+```python
+class Solution:
+    def frequencySort(self, s: str) -> str:
+        # 桶排序
+        ret = []
+        countFrequency = collections.defaultdict(int)
+        for i in s:
+            countFrequency[i] += 1
+        buckets = [[] for _ in range(len(s) + 1)]
+        for i in countFrequency:
+            buckets[countFrequency[i]].extend(i*countFrequency[i])
+        for i in buckets[::-1]:
+            if(i):
+                ret.extend(i)
+        return ''.join(ret)
 
-    List<Character>[] frequencyBucket = new ArrayList[s.length() + 1];
-    for (char c : frequencyForNum.keySet()) {
-        int f = frequencyForNum.get(c);
-        if (frequencyBucket[f] == null) {
-            frequencyBucket[f] = new ArrayList<>();
-        }
-        frequencyBucket[f].add(c);
-    }
-    StringBuilder str = new StringBuilder();
-    for (int i = frequencyBucket.length - 1; i >= 0; i--) {
-        if (frequencyBucket[i] == null) {
-            continue;
-        }
-        for (char c : frequencyBucket[i]) {
-            for (int j = 0; j < i; j++) {
-                str.append(c);
-            }
-        }
-    }
-    return str.toString();
-}
+
+作者：cui-jin-hao-_official
+链接：https://leetcode-cn.com/problems/sort-characters-by-frequency/solution/python-counterda-ding-dui-tong-pai-xu-by-cui-jin-h/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 ```
 
 # 荷兰国旗问题
@@ -216,25 +201,28 @@ Output: [0,0,1,1,2,2]
 
 题目描述：只有 0/1/2 三种颜色。
 
-```java
-public void sortColors(int[] nums) {
-    int zero = -1, one = 0, two = nums.length;
-    while (one < two) {
-        if (nums[one] == 0) {
-            swap(nums, ++zero, one++);
-        } else if (nums[one] == 2) {
-            swap(nums, --two, one);
-        } else {
-            ++one;
-        }
-    }
-}
+```python
+class Solution:
+    def sortColors(self, nums: List[int]) -> None:
+        '''
+        荷兰三色旗问题解
+        '''
+        # 对于所有 idx < p0 : nums[idx < p0] = 0
+        # curr是当前考虑元素的下标
+        p0 = curr = 0
+        # 对于所有 idx > p2 : nums[idx > p2] = 2
+        p2 = len(nums) - 1
 
-private void swap(int[] nums, int i, int j) {
-    int t = nums[i];
-    nums[i] = nums[j];
-    nums[j] = t;
-}
+        while curr <= p2:
+            if nums[curr] == 0:
+                nums[p0], nums[curr] = nums[curr], nums[p0]
+                p0 += 1
+                curr += 1
+            elif nums[curr] == 2:
+                nums[curr], nums[p2] = nums[p2], nums[curr]
+                p2 -= 1
+            else:
+                curr += 1
 ```
 
 
